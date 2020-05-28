@@ -1,12 +1,10 @@
 package Connection;
 
-import Commands.History;
 import Controller.CommandWithLogin;
 import Controller.CommandWithObject;
 import Controller.Commandable;
 import Human.HumanBeing;
 
-import javax.sound.midi.Receiver;
 import java.io.IOException;
 import java.sql.SQLException;
 import java.util.ArrayList;
@@ -43,7 +41,6 @@ public class User extends Thread {
     @Override
     public void run() {
         try {
-            History history = new History();
             int port = Integer.parseInt((String) portLoginPassword.get("port"));
             if (port != -1)
                 sender.setPort(port);
@@ -56,7 +53,6 @@ public class User extends Thread {
             Commandable command = (Commandable) commandAndArgument.get(0);
             String arg = (String) commandAndArgument.get(1);
             System.out.println("Получена команда \"" + command.getName() + "\".");
-            history.addToHistory(command.getName());
             String commandResult = "";
             try {
                 CommandWithLogin commandWithLogin = (CommandWithLogin) command;
