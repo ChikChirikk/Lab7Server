@@ -35,3 +35,23 @@ public class Handler implements Runnable{
         }
     }
 }
+//    public void run() throws IOException, ClassNotFoundException, SQLException {
+//        try {
+//            while (true) {
+//                app.checkForSaveCommand();
+//                HashMap portLoginPassword = (HashMap) receiver.receiveObject();
+//                String login = (String) portLoginPassword.get("login");
+//                User user = new User(login, this, receiver, sender);
+//                user.setPortLoginPassword(portLoginPassword);
+//                //user.setCommandAndArgument(receiver.receiveCommand());
+//                user.start();
+//                Thread.currentThread().sleep(20);
+//
+//            }
+//        } catch (Exception e) {
+//            e.printStackTrace();
+//            this.begin();
+//            this.run();
+//
+//        }
+//    }

@@ -7,6 +7,7 @@ import Human.HumanBeing;
 
 import java.io.IOException;
 import java.sql.SQLException;
+import java.text.ParseException;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
@@ -40,17 +41,21 @@ public class User extends Thread {
 
     @Override
     public void run() {
-        try {
             int port = Integer.parseInt((String) portLoginPassword.get("port"));
             if (port != -1)
                 sender.setPort(port);
             else {
                 this.interrupt();
-                app.begin();
-                app.run();
             }
-            ArrayList commandAndArgument = receiver.receiveCommand();
-            Commandable command = (Commandable) commandAndArgument.get(0);
+        ArrayList commandAndArgument = null;
+        try {
+            commandAndArgument = receiver.receiveCommand();
+        } catch (IOException e) {
+            e.printStackTrace();
+        } catch (ClassNotFoundException e) {
+            e.printStackTrace();
+        }
+        Commandable command = (Commandable) commandAndArgument.get(0);
             String arg = (String) commandAndArgument.get(1);
             System.out.println("Получена команда \"" + command.getName() + "\".");
             String commandResult = "";
@@ -87,7 +92,7 @@ public class User extends Thread {
             } catch (Exception e) {
                 try {
                     commandResult = (String) command.execute(arg);
-                } catch (IOException | SQLException ex) {
+                } catch (IOException | SQLException | ParseException ex) {
                 }
             }
             try {
@@ -100,9 +105,6 @@ public class User extends Thread {
                 System.out.println("Клиенту [" + portLoginPassword.get("login") + "] отправлено сообщение:\n\t" + commandResult.replace("\n", "\n\t") + "\n");
             else System.out.println("");
             this.interrupt();
-        } catch (Exception e) {
-            e.printStackTrace();
-            this.interrupt();
-        }
+
     }
 }

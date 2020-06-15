@@ -15,7 +15,7 @@ import java.util.List;
 
 public class ServerReceiver {
     Deserializator deserializator = new Deserializator();
-    ByteBuffer buffer = ByteBuffer.allocate(100000);
+    ByteBuffer buffer = ByteBuffer.allocate(1000000);
     DatagramChannel channel;
     DatagramSocket socket;
     InetSocketAddress address;
@@ -34,19 +34,24 @@ public class ServerReceiver {
         return clientPort;
     }
 
-    public String receive() throws IOException {
-        String s = "";
-        while (true) {
-            InetSocketAddress remoteAdress = (InetSocketAddress) channel.receive(buffer);
-            if (remoteAdress != null) {
-                buffer.flip();
-                int limit = buffer.limit();
-                byte bytes[] = new byte[limit];
-                buffer.get(bytes, 0, limit);
-                s = new String(bytes);
-                buffer.clear();
-                return s;
+    public String receive() {
+        try {
+            String s = "";
+            while (true) {
+                InetSocketAddress remoteAdress = (InetSocketAddress) channel.receive(buffer);
+                if (remoteAdress != null) {
+                    buffer.flip();
+                    int limit = buffer.limit();
+                    byte bytes[] = new byte[limit];
+                    buffer.get(bytes, 0, limit);
+                    s = new String(bytes);
+                    buffer.clear();
+                    return s;
+                }
             }
+        } catch (Exception e) {
+            e.printStackTrace();
+            return null;
         }
     }
 
@@ -60,13 +65,10 @@ public class ServerReceiver {
                 buffer.get(bytes, 0, limit);
                 Object object = deserializator.toDeserialize(bytes);
                 buffer.clear();
-                try {
-                    HashMap packedHuman = (HashMap) object;
-                    if (packedHuman.get("human") != null) {
-                        receivedHumans.add(packedHuman);
-                        return this.receiveObject();
-                    }
-                } catch (ClassCastException e) {
+                HashMap packedHuman = (HashMap) object;
+                if (packedHuman.get("human") != null) {
+                    receivedHumans.add(packedHuman);
+                    return this.receiveObject();
                 }
                 return object;
             }
@@ -100,7 +102,7 @@ public class ServerReceiver {
     }
 
     public static List<HashMap> getReceivedHumans() {
-        return  receivedHumans;
+        return receivedHumans;
     }
 
     public static void removeReceivedHuman(int ind) {
